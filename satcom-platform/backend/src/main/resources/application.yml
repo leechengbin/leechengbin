@@ -1,0 +1,151 @@
+# Tomcat
+server:
+  tomcat:
+    uri-encoding: UTF-8
+    accept-count: 5000
+    threads:
+      max: 1024
+      min-spare: 30
+    connection-timeout: 20000
+  port: 8088
+
+#mybatis
+mybatis-plus:
+  check-config-location: true
+  configuration:
+    #是否开启自动驼峰命名规则（camel case）映射
+    map-underscore-to-camel-case: true
+    #全局地开启或关闭配置文件中的所有映射器已经配置的任何缓存
+    cache-enabled: false
+    call-setters-on-nulls: true
+    #配置JdbcTypeForNull, oracle数据库必须配置
+    jdbc-type-for-null: 'null'
+    #MyBatis 自动映射时未知列或未知属性处理策略 NONE：不做任何处理 (默认值), WARNING：以日志的形式打印相关警告信息, FAILING：当作映射失败处理，并抛出异常和详细信息
+    auto-mapping-unknown-column-behavior: warning
+    # 打印SQL
+#    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  global-config:
+    banner: false
+    db-config:
+      #主键类型  0:"数据库ID自增", 1:"未设置主键类型",2:"用户输入ID (该类型可以通过自己注册自动填充插件进行填充)", 3:"全局唯一ID (idWorker), 4:全局唯一ID (UUID), 5:字符串全局唯一ID (idWorker 的字符串表示)";
+      id-type: auto
+      #字段验证策略 IGNORED:"忽略判断", NOT_NULL:"非NULL判断", NOT_EMPTY:"非空判断", DEFAULT 默认的,一般只用于注解里(1. 在全局里代表 NOT_NULL,2. 在注解里代表 跟随全局)
+      insert-strategy: not_null
+      update-strategy: not_null
+      #驼峰下划线转换
+      column-underline: true
+      #      # 在使用AutoGenerator生成的实体中加上全局前缀
+      #      table-prefix: t_
+      #数据库大写下划线转换
+      #capital-mode: true
+      #逻辑删除值
+      logic-delete-value: 1
+      #逻辑未删除值
+      logic-not-delete-value: 0
+
+spring:
+  # 环境 dev|prod|local
+  profiles:
+    active: local
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    druid:
+      initialSize: 5
+      minIdle: 5
+      maxActive: 20 #业务忙可以加大
+      maxWait: 60000
+      timeBetweenEvictionRunsMillis: 60000
+      min-evictable-idle-time-millis: 300000
+      validationQuery: select 1
+      test-on-borrow: false
+      test-on-return: false
+      test-while-idle: true
+      testWhileIdle: true
+      testOnBorrow: false
+      testOnReturn: false
+      poolPreparedStatements: true
+      maxPoolPreparedStatementPerConnectionSize: 20
+      filters: stat,wall,slf4j
+      connectProperties:
+        druid.stat.slowSqlMillis: 50
+      connectionProperties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
+      connection-init-sqls: set names utf8mb4
+      # 合并多个DruidDataSource的监控数据
+      useGlobalDataSourceStat: true
+      stat-view-servlet:
+        enabled: true #是否启用StatViewServlet默认值true
+        url-pattern: /druid/*
+        reset-enable: true
+        login-username: admin
+        login-password: 123456
+        allow: #IP
+        deny:  #IP
+      web-stat-filter:
+        exclusions: "*.js,*.gif,*.jpg,*.png,*.css,*.ico,/druid/*"
+  main:
+    allow-bean-definition-overriding: true
+  # jackson时间格式化
+  jackson:
+    time-zone: GMT+8
+    date-format: yyyy-MM-dd HH:mm:ss
+    default-property-inclusion: always
+  servlet:
+    multipart:
+      max-file-size: 200MB
+      max-request-size: 200MB
+      enabled: true
+  # 不使用 JPA，避免启动冲突
+  #切面启用
+  aop:
+    proxy-target-class: true
+    auto: true
+  mvc:
+    hiddenmethod:
+      filter:
+        enabled: true
+  web:
+    resources:
+      add-mappings: true
+
+logging:
+  level:
+    root: info
+    com.satcom: debug
+    org.mybatis: warn
+    com.baomidou: warn
+keyidea:
+  upload:
+    path: d:/home/www/fileupload
+    sysName: satcom-platform
+    cloudName: cloud_drive
+  download:
+    path: d:/home/www/fileupload
+  preview:
+    url: http://172.16.30.19
+  default:
+    password: 123456
+  domain:
+    #域名配置
+    name: https://boss.keyidea.cn/fileupload
+
+---
+spring:
+  config:
+    activate:
+      on-profile: dev
+  datasource:
+    driverClassName: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://10.16.0.192:3306/satcom_platform?zeroDateTimeBehavior=convertToNull&autoReconnect=true&tinyInt1isBit=false&useSSL=false&allowMultiQueries=true&useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+    username: javadev
+    password: javadev
+
+---
+spring:
+  config:
+    activate:
+      on-profile: local
+  datasource:
+    driverClassName: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3306/satcom_platform?zeroDateTimeBehavior=convertToNull&autoReconnect=true&tinyInt1isBit=false&useSSL=false&allowMultiQueries=true&useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+    username: root
+    password: 123456
